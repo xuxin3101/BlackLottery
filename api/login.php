@@ -1,7 +1,7 @@
 <?php
 include('connect.php');
 include_once('tools.php');
-$config=require_once('../config.php');
+include_once('../config.php');
 header("Access-Control-Allow-Origin: *");
 $result=[];
 $tools=new Tools();
@@ -41,7 +41,8 @@ if ($row) {//账号密码验证通过
         return;
     }
     $uniqid = md5(uniqid(microtime(true), true));
-    $sql="update login set token='$uniqid' where username='$username';";
+    $ip=$tools->ip();
+    $sql="update login set token='$uniqid',time=now(),ip='$ip' where username='$username';";
     $res = $mysqli->query($sql);
     $result['info']="登录成功";
     $result['status']=1;
