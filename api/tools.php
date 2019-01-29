@@ -16,9 +16,14 @@ class Tools
     }
     public function checksign($array, $secretkey)
     {   
-        if(empty($array['sign'])){
+        if(empty($array['sign'])|| empty($array['timestamp'])){
             return false;
         }
+        $time=time();
+        if(((int)$time)-(int)($array['timestamp'])>90){
+            return false;
+        }
+        
         $arr=[];
         foreach ($array as $key=>$value) {
             if ($key!='sign') {

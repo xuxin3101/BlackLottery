@@ -1,56 +1,61 @@
 ﻿<?php
 include('connect.php');
-if(!empty($_POST['username']))
-{
-$username=addslashes($_POST['username']);
-$name=addslashes($_POST['name']);
-$idcard=addslashes($_POST['idcard']);
-$alipay=addslashes($_POST['alipay']);
-$password=addslashes($_POST['password']);
-$bankaccount=addslashes($_POST['bankaccount']);
-$bankplace=addslashes($_POST['bankplace']);
-if(empty($idcard)){
-    echo 'idcard is empty';
+include_once('tools.php');
+$config=require_once('../config.php');
+header("Access-Control-Allow-Origin: *");
+$result=[];
+$tools=new Tools();
+if (!$tools->checksign($_POST, $config['secretkey'])) {
+    $result['info']="sign验证失败";
+    $result['status']=0;
+    echo json_encode($result);
+    $mysqli->close();
     return;
 }
-    $host = "https://idenauthen.market.alicloudapi.com";
-    $path = "/idenAuthentication";
-    $method = "POST";
-    $appcode = "00c14b3c24ab4187a92409743a421018";
-    $headers = array();
-    array_push($headers, "Authorization:APPCODE " . $appcode);
-    //根据API的要求，定义相对应的Content-Type
-    array_push($headers, "Content-Type".":"."application/x-www-form-urlencoded; charset=UTF-8");
-    $querys = "";
-    $bodys = "idNo=$idcard&name=".urlencode($name);
-    $url = $host . $path;
-    $curl = curl_init();
-    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($curl, CURLOPT_FAILONERROR, false);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curl, CURLOPT_HEADER, false);
-    if (1 == strpos("$".$host, "https://"))
-    {
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-    }
-    curl_setopt($curl, CURLOPT_POSTFIELDS, $bodys);
-    $str=curl_exec($curl);
-    $str=json_decode($str);
-    $statue=$str->{'respCode'};
-    if($statue=="0000"){//身份匹配
-        $sql="insert into users(id,username,password,idcard,alipayaccount,alipayname,bankaccount,bankplace) values(null,'$username','$password','$idcard','$alipay','$name','$bankaccount','$bankplace')";
-        $res= $mysqli->query($sql);
-        echo $res;
-
-    }else{
-        echo "notinvaild";
-    }
-
+$username=addslashes($_POST['username']);
+$password=addslashes($_POST['password']);
+if (empty($username) || empty($password)||strlen($username)<6||strlen($password)) {
+    $result['info']="注册失败";
+    $result['status']=2;
+    echo json_encode($result);
+    $mysqli->close();
+    return;
 }
-else
-echo "erro";
+//使用事务的概念往users表和login表里各插入一条数据
+$sql="begin;";
+$res= $mysqli->query($sql);
+$sql="insert into users(id,username,password,status,level) values(null,'$username','$password',1,1)";
+$res= $mysqli->query($sql);
+if ($res) {//往users表里插入成功
+    $sql="insert into login(id,username) values(null,'$username')";
+    $res= $mysqli->query($sql);
+    if ($res) {//往login表里插入成功
+        $sql="commit";
+        $res= $mysqli->query($sql);
+        if ($res) {//注册成功
+            $result['info']="注册成功";
+            $result['status']=1;
+            echo json_encode($result);
+        } else {//注册失败
+            $sql="rollback;";
+            $res= $mysqli->query($sql);
+            $result['info']="注册失败";
+            $result['status']=2;
+            echo json_encode($result);
+        }
+    } else {//注册失败
+        $sql="rollback;";
+        $res= $mysqli->query($sql);
+        $result['info']="注册失败";
+        $result['status']=2;
+        echo json_encode($result);
+    }
+} else {//往users表里插入失败,执行rollback
+    $sql="rollback;";
+    $res= $mysqli->query($sql);
+    $result['info']="注册失败";
+    $result['status']=2;
+    echo json_encode($result);
+}
+  
 $mysqli->close();
-?>
