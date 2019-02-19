@@ -1,5 +1,3 @@
 <?php
-include_once('tools.php');
-$tools=new Tools();
-echo $tools->ip();
-
+$time=time();
+echo date('Y-m-d H:i:s',$time);
