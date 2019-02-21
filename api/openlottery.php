@@ -419,16 +419,16 @@ function send_moeny($mysqli, $info, $odd, $dbname, $gamename, $remarks)
     $conin=((int)$info['amount'])*(1+$odd);
     $conin=intval($conin);
     //查询剩余额
-    $sql="select * from wallet where username='$username'";
+    $sql="select * from wallet2 where username='$username'";
     $mysqli->select_db($dbname);
     $res=$mysqli->query($sql);
     $row=$res->fetch_assoc();
     $balance=((int)$row['coin'])+$conin;
     //增加一个账单
-    $sql="insert into bills(id,username,gamename,amount,surplus,type,remarks,time) values(null,'$username','$gamename',$conin,$balance,1,'$remarks',now())";
+    $sql="insert into bills2(id,username,gamename,amount,surplus,type,remarks,time) values(null,'$username','$gamename',$conin,$balance,1,'$remarks',now())";
     $res=$mysqli->query($sql);
     //增加余额
-    $sql="update wallet set coin=coin+$conin where username='$username'";
+    $sql="update wallet2 set coin=coin+$conin where username='$username'";
     $res=$mysqli->query($sql);
     //切换回原来的数据库
     //$mysqli->select_db($dbname);

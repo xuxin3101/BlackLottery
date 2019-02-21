@@ -85,6 +85,11 @@
                       <li><a href="jiesuanrecord.php">结算记录</a></li>
                     </ul>
                   </li>
+                  <li><a><i class="fa fa-home"></i> 盘口信息记录 <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="pankourecord.php">押注信息</a></li>
+                    </ul>
+                  </li>
                   <li><a><i class="fa fa-home"></i> 系统设置 <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="systemsetting.php">系统设置</a></li>

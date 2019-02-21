@@ -22,10 +22,10 @@ $sql="select * from login where username='$username' and token='$token'";
 $res=$mysqli->query($sql);
 $row=$res->fetch_assoc();
 if ($row) {//检查token通过
-    $sql="select users.username username,users.level level,wallet.coin coin  from users,wallet where users.username='$username' and wallet.username='$username'";
+    $sql="select users.username username,users.level level,wallet2.coin coin  from users,wallet2 where users.username='$username' and wallet2.username='$username'";
     $res=$mysqli->query($sql);
     $row=$res->fetch_assoc();
-    if($row){
+    if ($row) {
         $result['info']="查询成功";
         $result['status']=1;
         $myinfo=[];
@@ -34,11 +34,30 @@ if ($row) {//检查token通过
         $myinfo['level']=$row['level'];
         $result['myinfo']=$myinfo;
         echo json_encode($result);
-    }else{
-        $result['info']="查询失败";
-        $result['status']=3;
-        $result['myinfo']=(object)[];
-        echo json_encode($result);
+    } else {
+        //在wallet2添加一条记录
+        $sql="insert into wallet2(id,username,coin) values(null,'$username',0)";
+        $res=$mysqli->query($sql);
+        //重新查询
+        $sql="select users.username username,users.level level,wallet2.coin coin  from users,wallet2 where users.username='$username' and wallet2.username='$username'";
+        $res=$mysqli->query($sql);
+        $row=$res->fetch_assoc();
+        if ($row) {
+            $result['info']="查询成功";
+            $result['status']=1;
+            $myinfo=[];
+            $myinfo['username']=$username;
+            $myinfo['balance']=$row['coin'];
+            $myinfo['level']=$row['level'];
+            $result['myinfo']=$myinfo;
+            echo json_encode($result);
+        } else{
+            $result['info']="查询失败";
+            $result['status']=3;
+            $result['myinfo']=(object)[];
+            echo json_encode($result);
+        }
+       
     }
 } else {//检查token不通过，驳回
     $result['info']="token不正确";

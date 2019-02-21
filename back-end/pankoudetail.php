@@ -68,6 +68,7 @@
                       <li><a href="peilvlevel7.php">7级会员赔率</a></li>
                       <li><a href="peilvlevel8.php">8级会员赔率</a></li>
                       <li><a href="peilvlevel9.php">9级会员赔率</a></li>
+                    
                     </ul>
                   </li>
                   <li><a><i class="fa fa-home"></i> 聊天记录设置 <span class="fa fa-chevron-down"></span></a>
@@ -165,7 +166,7 @@
               <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>结算记录</h2>
+                    <h2>充值记录</h2>
                     
                     <div class="clearfix"></div>
                   </div>
@@ -178,10 +179,12 @@
                               <thead>
                                 <tr>
                                   <th>id</th>
-                                  <th>充值账号</th>
-                                  <th>结算金额</th>
-                                  <th>剩余金额</th>
-                                  <th>充值时间</th>
+                                  <th>账号</th>
+                                  <th>类型</th>
+                                  <th>钱数</th>
+                                  <th>时间</th>
+                                  <th>期数</th>
+                                  <th>购买球数字</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -192,27 +195,155 @@
                                } else {
                                    $page=$_GET['page'];
                                }
-                               $sql ="select count(*) c from bills where type=6";
+                               $tablename=$_GET['tablename'];
+                               if(empty($tablename))
+                               {echo   '非法访问';
+                                return;
+                              }
+                               $mysqli->select_db('bet');
+                               $sql="select count(*) c from $tablename";
                                $res = $mysqli->query($sql);
                                $row= $res->fetch_assoc();
                                $count=$row['c'];
                                $page=($page-1)*10;
-                               $sql="select * from bills where type=6 order by id desc limit $page,10;";
+                               $sql="select * from $tablename  limit $page,10;";
                                $res=$mysqli->query($sql);
                                
-                               $mysqli->close();
+                               
                                while ($row=$res->fetch_assoc()) {
+                                 $time=$row['time'];
                                    ?>
                                 <tr>
                                   <th scope="row"><?php echo $row['id']?></th>
                                   <td><?php echo $row['username']?></td>
+                                  <td><?php 
+                                  switch ($row['type']){
+                                    case 1:
+                                    echo '大';
+                                    break;
+                                    case 2:
+                                    echo '小';
+                                    break;
+                                    case 3:
+                                    echo '龙';
+                                    break;
+                                    case 4:
+                                    echo '虎';
+                                    break;
+                                    case 5:
+                                    echo '和';
+                                    break;
+                                    case 6:
+                                    echo '单';
+                                    break;
+                                    case 7:
+                                    echo '双';
+                                    break;
+                                    case 8:
+                                    echo '牛1';
+                                    break;
+                                    case 9:
+                                    echo '牛2';
+                                    break;
+                                    case 10:
+                                    echo '牛3';
+                                    break;
+                                    case 11:
+                                    echo '牛4';
+                                    break;
+                                    case 12:
+                                    echo '牛5';
+                                    break;
+                                    case 13:
+                                    echo '牛6';
+                                    break;
+                                    case 14:
+                                    echo '牛7';
+                                    break;
+                                    case 15:
+                                    echo '牛8';
+                                    break;
+                                    case 16:
+                                    echo '牛9';
+                                    break;
+                                    case 17:
+                                    echo '牛牛';
+                                    break;
+                                    case 18:
+                                    echo '豹子';
+                                    break;
+                                    case 19:
+                                    echo '四张';
+                                    break;
+                                    case 20:
+                                    echo '葫芦';
+                                    break;
+                                    case 21:
+                                    echo '顺子';
+                                    break;
+                                    case 22:
+                                    echo '三张';
+                                    break;
+                                    case 23:
+                                    echo '两对';
+                                    break;
+                                    case 24:
+                                    echo '一对';
+                                    break;
+                                    case 25:
+                                    echo '五离';
+                                    break;
+                                    case 26:
+                                    echo '个位直选';
+                                    break;
+                                    case 27:
+                                    echo '十位直选';
+                                    break;
+                                    case 28:
+                                    echo '百位直选';
+                                    break;
+                                    case 29:
+                                    echo '千位直选';
+                                    break;
+                                    case 30:
+                                    echo '万位直选';
+                                    break;
+                                    case 31:
+                                    echo '任选';
+                                    break;
+                                  }
+                                  
+                                  ?></td>
                                   <td><?php echo $row['amount']?></td>
-                                  <td><?php echo $row['surplus']?></td>
                                   <td><?php echo $row['time']?></td>
+                                  <td><?php echo $row['periods']?></td>
+                                  <td><?php echo $row['ballnum']?></td>
                                 </tr>
                                <?php
                                }?>
                               </tbody>
+                              <?php 
+                             
+                              $sql="select sum(amount) amount from ".$tablename;
+                              $res=$mysqli->query($sql);
+                              $row=$res->fetch_assoc();
+                             
+                              ?>
+                              <tr><td style="color:red;">当天总销售金额:<?php echo $row['amount'];?></td>
+                              <?php 
+                               $mysqli->select_db('BlackLottery');
+                               $sql="select sum(amount) amount from bills2 where type=1 and to_days(time) = to_days('$time')";
+                               $res=$mysqli->query($sql);
+                               $row=$res->fetch_assoc();
+                               $mysqli->close();
+                              ?>
+                                  <td style="color:green;">当天总出奖金:<?php 
+                                  if($row['amount']==null)
+                                  echo 0;
+                                  else
+                                  echo $row['amount'];
+                                  ?></td>
+                              </tr>
                               <tr>
                                             <td colspan="10">
                                                 
@@ -262,7 +393,7 @@
                                                             alert("已经是第一页了哦");
                                                             return;
                                                         } else {
-                                                            location.href="chongzhirecord.php?page=1"
+                                                            location.href="pankoudetail.php?page=1&tablename=<?php echo $tablename; ?>";
                                                         }
                                                     }
 
@@ -274,7 +405,7 @@
                                                             alert("已经是第一页了哦");
                                                             return;
                                                         } else {
-                                                            location.href="chongzhirecord.php?page="+(page-1);
+                                                            location.href="pankoudetail.php?page="+(page-1)+"&tablename=<?php echo $tablename;?>";
 
                                                         }
                                                     }
@@ -291,7 +422,7 @@
                                                             alert("已经是最后一页");
                                                             return;
                                                         } else {
-                                                            location.href="chongzhirecord.php?page="+(page+1);
+                                                            location.href="pankoudetail.php?page="+(page+1)+"&tablename=<?php echo $tablename;?>";
                                                         }
                                                     }
                                                     /**
@@ -305,7 +436,7 @@
                                                             alert("已经是最后一页");
                                                             return;
                                                         } else {
-                                                            location.href="chongzhirecord.php?page="+pageCount;
+                                                            location.href="pankoudetail.php?page="+pageCount+"&tablename=<?php echo $tablename;?>";
                                                         }
                                                       }
                                                 </script>
@@ -347,26 +478,7 @@
     <script src="js/alert.js"></script>
     <script>
   
-      function chongzhi(){
-        var chongzhiusername=$("#username").val();
-        var amount=$("#amount").val();
-        var username= localStorage.getItem("ljsscusername");
-        var password= localStorage.getItem("ljsscpassword");
-        var data="chongzhiusername="+chongzhiusername+"&amount="+amount+"&username="+username+"&password="+password;
-        $.post('../api/chongzhi.php',data,function(res){
-          console.log(res);
-          if(res==1){//更新成功
-            ShowSuccess("充值成功..");
-            setTimeout(function() {
-                location.href="chongzhi.php"
-            }, 1000);
-          }else{//更新失败
-            ShowFailure("充值失败");
-          }
-
-
-        })
-      }
+      
       var username= localStorage.getItem("ljsscusername");
       $("#username1").html(username);
       function logout(){

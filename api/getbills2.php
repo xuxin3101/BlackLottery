@@ -23,7 +23,7 @@ $sql="select * from login where username='$username' and token='$token'";
 $res=$mysqli->query($sql);
 $row=$res->fetch_assoc();
 if($row){
-    $sql="select * from bills2 where username='$username' order by id desc";
+    $sql="select * from bills where username='$username' order by id desc";
     $res=$mysqli->query($sql);
     $data=[];
     while($row=$res->fetch_assoc()){

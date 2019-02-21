@@ -84,6 +84,11 @@
                       <li><a href="jiesuanrecord.php">结算记录</a></li>
                     </ul>
                   </li>
+                  <li><a><i class="fa fa-home"></i> 盘口信息记录 <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="pankourecord.php">押注信息</a></li>
+                    </ul>
+                  </li>
                   <li><a><i class="fa fa-home"></i> 系统设置 <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="systemsetting.php">系统设置</a></li>
@@ -226,6 +231,20 @@
                           <input id="endtime" class="form-control col-md-7 col-xs-12" name="name" required="required" type="text"  value="<?php echo $data['endtime'] ?>">
                         </div>
                       </div>
+                      <div class="item form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12" >获取徒弟金钱比 <span class="required">*</span>
+                        </label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                          <input id="apprentice" class="form-control col-md-7 col-xs-12" name="name" required="required" type="text"  value="<?php echo $data['apprentice'] ?>">
+                        </div>
+                      </div>
+                      <div class="item form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12" >获取徒孙金钱比 <span class="required">*</span>
+                        </label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                          <input id="grandson" class="form-control col-md-7 col-xs-12" name="name" required="required" type="text"  value="<?php echo $data['grandson'] ?>">
+                        </div>
+                      </div>
                      
                       <div class="ln_solid"></div>
                       
@@ -276,9 +295,11 @@
         var levelintroduce=$("#levelintroduce").val();
         var starttime=$("#starttime").val();
         var endtime=$("#endtime").val();
+        var grandson=$("#grandson").val();
+        var apprentice=$("#apprentice").val();
         var username= localStorage.getItem("ljsscusername");
         var password= localStorage.getItem("ljsscpassword");
-        var data="cricletime="+cricletime+"&customserviceqq="+customserviceqq+"&rechargeqq="+rechargeqq+"&withdrawqq="+withdrawqq+"&levelintroduce="+levelintroduce+"&username="+username+"&password="+password+"&starttime="+starttime+"&endtime="+endtime;
+        var data="cricletime="+cricletime+"&customserviceqq="+customserviceqq+"&rechargeqq="+rechargeqq+"&withdrawqq="+withdrawqq+"&levelintroduce="+levelintroduce+"&username="+username+"&password="+password+"&starttime="+starttime+"&endtime="+endtime+"&apprentice="+apprentice+"&grandson="+grandson;
         $.post('../api/updatesystem.php',data,function(res){
           console.log(res);
           if(res==1){//更新成功

@@ -68,6 +68,7 @@
                       <li><a href="peilvlevel7.php">7级会员赔率</a></li>
                       <li><a href="peilvlevel8.php">8级会员赔率</a></li>
                       <li><a href="peilvlevel9.php">9级会员赔率</a></li>
+                    
                     </ul>
                   </li>
                   <li><a><i class="fa fa-home"></i> 聊天记录设置 <span class="fa fa-chevron-down"></span></a>
@@ -165,7 +166,7 @@
               <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>结算记录</h2>
+                    <h2>充值记录</h2>
                     
                     <div class="clearfix"></div>
                   </div>
@@ -178,10 +179,9 @@
                               <thead>
                                 <tr>
                                   <th>id</th>
-                                  <th>充值账号</th>
-                                  <th>结算金额</th>
-                                  <th>剩余金额</th>
-                                  <th>充值时间</th>
+                                  <th>时间</th>
+                                  <th>表名</th>
+                                  <th>操作</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -192,12 +192,12 @@
                                } else {
                                    $page=$_GET['page'];
                                }
-                               $sql ="select count(*) c from bills where type=6";
+                               $sql="select count(tablename) c from periods group by tablename";
                                $res = $mysqli->query($sql);
                                $row= $res->fetch_assoc();
                                $count=$row['c'];
                                $page=($page-1)*10;
-                               $sql="select * from bills where type=6 order by id desc limit $page,10;";
+                               $sql="select tablename,time,id from periods  group by tablename order by id desc limit $page,10;";
                                $res=$mysqli->query($sql);
                                
                                $mysqli->close();
@@ -205,10 +205,11 @@
                                    ?>
                                 <tr>
                                   <th scope="row"><?php echo $row['id']?></th>
-                                  <td><?php echo $row['username']?></td>
-                                  <td><?php echo $row['amount']?></td>
-                                  <td><?php echo $row['surplus']?></td>
                                   <td><?php echo $row['time']?></td>
+                                  <td><?php echo $row['tablename']?></td>
+                                  <td> <a href="pankoudetail.php?tablename=<?php echo $row['tablename']; ?>" class="btn btn-info btn-xs"><i
+                                                            class="fa fa-pencil"></i> 查看 </a>
+                                  </td>
                                 </tr>
                                <?php
                                }?>
@@ -262,7 +263,7 @@
                                                             alert("已经是第一页了哦");
                                                             return;
                                                         } else {
-                                                            location.href="chongzhirecord.php?page=1"
+                                                            location.href="pankourecord.php?page=1"
                                                         }
                                                     }
 
@@ -274,7 +275,7 @@
                                                             alert("已经是第一页了哦");
                                                             return;
                                                         } else {
-                                                            location.href="chongzhirecord.php?page="+(page-1);
+                                                            location.href="pankourecord.php?page="+(page-1);
 
                                                         }
                                                     }
@@ -291,7 +292,7 @@
                                                             alert("已经是最后一页");
                                                             return;
                                                         } else {
-                                                            location.href="chongzhirecord.php?page="+(page+1);
+                                                            location.href="pankourecord.php?page="+(page+1);
                                                         }
                                                     }
                                                     /**
@@ -305,7 +306,7 @@
                                                             alert("已经是最后一页");
                                                             return;
                                                         } else {
-                                                            location.href="chongzhirecord.php?page="+pageCount;
+                                                            location.href="pankourecord.php?page="+pageCount;
                                                         }
                                                       }
                                                 </script>

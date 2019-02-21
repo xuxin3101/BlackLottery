@@ -10,6 +10,8 @@ if (!empty($_POST['username'])) {
     $endtime=addslashes($_POST['endtime']);
     $username=addslashes($_POST['username']);
     $password=addslashes($_POST['password']);
+    $apprentice=addslashes($_POST['apprentice']);
+    $grandson=addslashes($_POST['grandson']);
     //先检查账号密码
     $sql="select * from adminuser where username='$username' and password='$password'";
     $res=$mysqli->query($sql);
@@ -29,6 +31,10 @@ if (!empty($_POST['username'])) {
         $sql = "update systemsetting set sysvalue='$starttime' where syskey='starttime'";
         $res= $mysqli->query($sql);
         $sql = "update systemsetting set sysvalue='$endtime' where syskey='endtime'";
+        $res= $mysqli->query($sql);
+        $sql = "update systemsetting set sysvalue='$grandson' where syskey='grandson'";
+        $res= $mysqli->query($sql);
+        $sql = "update systemsetting set sysvalue='$apprentice' where syskey='apprentice'";
         $res= $mysqli->query($sql);
         echo $res;
     }else{
